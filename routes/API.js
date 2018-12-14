@@ -3,9 +3,11 @@ const router = express.Router()
 const bcrypt = require('bcrypt')
 
 const User = require('../models/user')
+const Survey = require('../models/survey')
 
 const { isLoggedIn } = require('../helpers/middlewares')
 
+/*
 router.get('/me', (req, res, next) => {
   if (req.session.currentUser) {
     res.json(req.session.currentUser)
@@ -98,11 +100,36 @@ router.post('/logout', (req, res) => {
   req.session.currentUser = null
   return res.status(204).send()
 })
-/*
-router.get('/survey', isLoggedIn(), (req, res, next) => {
-  res.status(200).json({
-    message: 'This is a private message'
-  })
-}) */
+*/
+
+router.get('/surveys', isLoggedIn(), (req, res, next) => {
+  Survey.find()
+    .then((surveys) => {
+      if (!surveys) {
+        res.status(404).json({
+          error: 'Not-found'
+        })
+      }
+      res.status(200).json(surveys)
+    })
+    .catch(() => {
+      res.json('Error').status(500)
+    })
+})
+
+router.get('/surveys', isLoggedIn(), (req, res, next) => {
+  Survey.find()
+    .then((surveys) => {
+      if (!surveys) {
+        res.status(404).json({
+          error: 'Not-found'
+        })
+      }
+      res.status(200).json(surveys)
+    })
+    .catch(() => {
+      res.json('Error').status(500)
+    })
+})
 
 module.exports = router
