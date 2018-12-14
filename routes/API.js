@@ -102,15 +102,16 @@ router.post('/logout', (req, res) => {
 })
 */
 
-router.get('/surveys', isLoggedIn(), (req, res, next) => {
-  Survey.find()
-    .then((surveys) => {
-      if (!surveys) {
+router.get('/survey/:id', isLoggedIn(), (req, res, next) => {
+  const id = req.params.id
+  Survey.findById(id)
+    .then((survey) => {
+      if (!survey) {
         res.status(404).json({
           error: 'Not-found'
         })
       }
-      res.status(200).json(surveys)
+      res.status(200).json(survey)
     })
     .catch(() => {
       res.json('Error').status(500)

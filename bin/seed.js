@@ -45,12 +45,12 @@ users.forEach(user => {
 
 const surveys = [
   {
-    title: 'Is Alejo the funniest man on Earth?',
-    answers: ['Yes', 'Of Course', 'No way']
+    title: 'Is Alejo Daudí the funniest man on Earth?',
+    answers: ['Yes', 'Of course', 'Not really']
   },
   {
     title: 'How many beers will you drink this Friday?',
-    answers: ['Zero', 'Two', 'Three', 'Four', 'Five or more']
+    answers: ['0', '1', '2', '3', '4', '5', '5+']
   }
 ]
 
