@@ -6,6 +6,7 @@ const User = require('../models/user')
 const Survey = require('../models/survey')
 
 const { isLoggedIn } = require('../helpers/middlewares')
+const ObjectId = require('mongoose').Types.ObjectId
 
 /*
 router.get('/me', (req, res, next) => {
@@ -112,6 +113,43 @@ router.get('/survey/:id', isLoggedIn(), (req, res, next) => {
         })
       }
       res.status(200).json(survey)
+    })
+    .catch(() => {
+      res.json('Error').status(500)
+    })
+})
+
+router.put('/survey/:id/vote', isLoggedIn(), (req, res, next) => {
+  const id = req.params.id
+  const {
+    answer,
+    userId
+  } = req.body
+  Survey.findById(id) // Finds the Survey
+    .then((survey) => {
+      if (!survey) {
+        res.status(404).json({
+          error: 'Not-found'
+        })
+      }
+      const { answers, participants } = survey
+      let index = answers.findIndex(x => x.answerTitle === answer)
+      answers[index].votes++
+      index = participants.findIndex(y => y.participant == userId)
+      participants[index].hasVoted = true
+      Survey.findByIdAndUpdate(id, { $set: { answers, participants } }) // Stores the vote in the Database
+        .then((survey) => {
+          if (!survey) {
+            res.status(404).json({
+              error: 'Not-found'
+            })
+          }
+          console.log(survey)
+          res.status(200).json(survey)
+        })
+        .catch(() => {
+          res.json('Error').status(500)
+        })
     })
     .catch(() => {
       res.json('Error').status(500)

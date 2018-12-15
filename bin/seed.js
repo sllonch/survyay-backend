@@ -46,20 +46,40 @@ users.forEach(user => {
 const surveys = [
   {
     title: 'Is Alejo Daudí the funniest man on Earth?',
-    answers: ['Yes', 'Of course', 'Not really']
+    answers: [
+      { answerTitle: 'Yes', votes: 1 },
+      { answerTitle: 'Of course', votes: 1 },
+      { answerTitle: 'Not really', votes: 0 }
+    ]
   },
   {
     title: 'How many beers will you drink this Friday?',
-    answers: ['0', '1', '2', '3', '4', '5', '5+']
+    answers: [
+      { answerTitle: '0', votes: 0 },
+      { answerTitle: '1', votes: 0 },
+      { answerTitle: '2', votes: 0 },
+      { answerTitle: '3', votes: 0 },
+      { answerTitle: '4', votes: 0 },
+      { answerTitle: '5', votes: 0 },
+      { answerTitle: '5+', votes: 1 }
+    ]
   }
 ]
 
 User.create(users)
   .then((users) => {
     console.log('users created')
-    surveys[0].participants = [users[0]._id, users[1]._id, users[2]._id]
+    surveys[0].participants = [
+      { participant: users[0]._id, hasVoted: true },
+      { participant: users[1]._id, hasVoted: true },
+      { participant: users[2]._id, hasVoted: false }
+    ]
     surveys[0].owner = users[2]._id
-    surveys[1].participants = [users[0]._id, users[1]._id, users[2]._id]
+    surveys[1].participants = [
+      { participant: users[0]._id, hasVoted: true },
+      { participant: users[1]._id, hasVoted: false },
+      { participant: users[2]._id, hasVoted: false }
+    ]
     surveys[1].owner = users[2]._id
     Survey.create(surveys)
       .then(() => {
