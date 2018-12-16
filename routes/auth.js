@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt')
 
 const User = require('../models/user')
 
-const { isLoggedIn } = require('../helpers/middlewares')
+// const { isLoggedIn } = require('../helpers/middlewares')
 
 router.get('/me', (req, res, next) => {
   if (req.session.currentUser) {
@@ -58,8 +58,6 @@ router.post('/signup', (req, res, next) => {
     email,
     password
   } = req.body
-
-  console.log(req.body)
 
   if (!name || !email || !password) {
     return res.status(422).json({
