@@ -118,7 +118,7 @@ router.get('/surveys', isLoggedIn(), (req, res, next) => {
 })
 
 router.post('/survey/new', isLoggedIn(), (req, res, next) => {
-  const {
+  let {
     participants,
     title,
     answers,
@@ -131,9 +131,7 @@ router.post('/survey/new', isLoggedIn(), (req, res, next) => {
     })
   }
 
-  const emails = participants.map(participant => participant.email)
-
-  console.log(emails)
+  const emails = participants.map(participant => participant.email) // Passing from an array of objects to an array of emails
 
   User.find({ email: { $in: emails } })
     .then((users) => {
@@ -143,10 +141,14 @@ router.post('/survey/new', isLoggedIn(), (req, res, next) => {
           error: 'Users-not-found'
         })
       }
-      const participants = users.map(user => user._id)
+      participants = users.map(user => user._id)
+      const newParticipants = participants.map(part => {
+        return { participant: part, hasVoted: false }
+      })
+      console.log(newParticipants)
 
       const newSurvey = Survey({
-        participants,
+        participants: newParticipants,
         title,
         answers,
         owner
@@ -188,6 +190,21 @@ router.put('/survey/:id/vote', isLoggedIn(), (req, res, next) => {
           error: 'Not-found'
         })
       }
+
+      // Survey.findByIdAndUpdate(id, { $set: { answers, participants } }) // Stores the vote in the Database
+      //   .then((survey) => {
+      //     if (!survey) {
+      //       res.status(404).json({
+      //         error: 'Not-found'
+      //       })
+      //     }
+      //     console.log(survey)
+      //     res.status(200).json(survey)
+      //   })
+      //   .catch(() => {
+      //     res.json('Error').status(500)
+      //   })
+
       const { answers, participants } = survey
       let index = answers.findIndex(x => x.answerTitle === answer)
       answers[index].votes++
