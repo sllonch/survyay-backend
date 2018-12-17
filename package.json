@@ -9,7 +9,7 @@
     "dev": "nodemon ./bin/www"
   },
   "engines": {
-    "node": "10.11.0",
+    "node": "v11.1.0",
     "npm": "6.4.1"
   },
   "dependencies": {
@@ -19,7 +19,7 @@
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
-    "dotenv": "^6.1.0",
+    "dotenv": "^6.2.0",
     "ejs": "~2.5.7",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
