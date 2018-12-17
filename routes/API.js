@@ -3,11 +3,29 @@ const router = express.Router()
 const User = require('../models/user')
 const Survey = require('../models/survey')
 const { isLoggedIn } = require('../helpers/middlewares')
-// const ObjectId = require('mongoose').Types.ObjectId
+const ObjectId = require('mongoose').Types.ObjectId
 
 router.get('/surveys', isLoggedIn(), (req, res, next) => {
-  Survey.find()
+  const userId = req.session.currentUser._id
+  Survey.find({ $or: [ { participants: { participant: ObjectId(userId), hasVoted: true } }, { participants: { participant: ObjectId(userId), hasVoted: false } }] }) // Shows all the surveys where currentUser is in the list of participants
     .then((surveys) => {
+      if (!surveys) {
+        res.status(404).json({
+          error: 'Not-found'
+        })
+      }
+      res.status(200).json(surveys)
+    })
+    .catch(() => {
+      res.json('Error').status(500)
+    })
+})
+
+router.get('/mysurveys', isLoggedIn(), (req, res, next) => {
+  const userId = req.session.currentUser._id
+  Survey.find({ owner: ObjectId(userId) }) // Shows all the surveys that currentUser has created
+    .then((surveys) => {
+      console.log('surveys:', surveys)
       if (!surveys) {
         res.status(404).json({
           error: 'Not-found'
@@ -38,7 +56,6 @@ router.post('/survey/new', isLoggedIn(), (req, res, next) => {
 
   User.find({ email: { $in: emails } })
     .then((users) => {
-      console.log(users)
       if (!users) {
         return res.status(404).json({
           error: 'Users-not-found'
@@ -48,7 +65,6 @@ router.post('/survey/new', isLoggedIn(), (req, res, next) => {
       const newParticipants = participants.map(part => {
         return { participant: part, hasVoted: false }
       })
-      console.log(newParticipants)
 
       const newSurvey = Survey({
         participants: newParticipants,
