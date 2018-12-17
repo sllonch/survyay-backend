@@ -1,10 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
-
 const User = require('../models/user')
-
-// const { isLoggedIn } = require('../helpers/middlewares')
 
 router.get('/me', (req, res, next) => {
   if (req.session.currentUser) {
@@ -96,11 +93,5 @@ router.post('/logout', (req, res) => {
   req.session.currentUser = null
   return res.status(204).send()
 })
-/*
-router.get('/survey', isLoggedIn(), (req, res, next) => {
-  res.status(200).json({
-    message: 'This is a private message'
-  })
-}) */
 
 module.exports = router
