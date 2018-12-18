@@ -1,9 +1,15 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const ObjectID = require('mongodb').ObjectID
+const ObjectID = Schema.Types.ObjectId
 
 const surveySchema = new Schema({
-  participants: Array,
+  participants: [{
+    participant: {
+      type: ObjectID,
+      ref: 'User'
+    },
+    hasVoted: Boolean
+  }],
   title: String,
   answers: Array,
   owner: {

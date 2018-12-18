@@ -7,7 +7,7 @@ const ObjectId = require('mongoose').Types.ObjectId
 
 router.get('/surveys', isLoggedIn(), (req, res, next) => {
   const userId = req.session.currentUser._id
-  Survey.find({ $or: [ { 'participants.participant': ObjectId(userId), 'participants.hasVoted': true }, { 'participants.participant': ObjectId(userId), 'participants.hasVoted': false } ] }) // Finds all the surveys where currentUser is in the list of participants
+  Survey.find({ $or: [ { participants: { participant: ObjectId(userId), hasVoted: true } }, { participants: { participant: ObjectId(userId), hasVoted: false } }] }) // Finds all the surveys where currentUser is in the list of participants
     .then((surveys) => {
       if (!surveys) {
         res.status(404).json({
@@ -101,50 +101,57 @@ router.put('/survey/:id/vote', isLoggedIn(), (req, res, next) => {
     answer,
     userId
   } = req.body
-
-  if (!answer || !userId) {
-    return res.status(422).json({
-      error: 'empty'
-    })
-  }
-
   Survey.findById(id) // Finds the Survey
     .then((survey) => {
+      console.log(survey)
       if (!survey) {
         res.status(404).json({
           error: 'Not-found'
         })
       }
-      for (let i = 0; i < survey.participants.length; i++) {
-        if (survey.participants[i].participant.equals(userId) && survey.participants[i].hasVoted === true) {
-          return res.json({ error: 'User already voted' }).status(402) // If user already voted return and send error
-        }
+      const currentParticipant = {
+        'participant': ObjectId(userId),
+        'hasVoted': false
       }
-      const { answers, participants } = survey
-      const indexAnswer = answers.findIndex(x => x.answerTitle === answer)
-      answers[indexAnswer].votes++
-      const indexParticipant = participants.findIndex(y => y.participant.equals(userId))
-      participants[indexParticipant].hasVoted = true
-      return Survey.findByIdAndUpdate(id, { $set: { answers, participants } }) // Stores the vote in the Database
+      console.log('Current participant:', currentParticipant)
+      console.log('Current Survey participants:', survey.participants)
+      Survey.find({ currentParticipant: { $in: survey.participants } }) // Looks if the voter has not voted in that survey
         .then((survey) => {
           if (!survey) {
             res.status(404).json({
               error: 'Not-found'
             })
           }
-          res.status(200).json(survey)
+          const { answers, participants } = survey
+          let index = answers.findIndex(x => x.answerTitle === answer)
+          answers[index].votes++
+          index = participants.findIndex(y => y.participant == userId)
+          participants[index].hasVoted = true
+          Survey.findByIdAndUpdate(id, { $set: { answers, participants } }) // Stores the vote in the Database
+            .then((survey) => {
+              if (!survey) {
+                res.status(404).json({
+                  error: 'Not-found'
+                })
+              }
+              res.status(200).json(survey)
+            })
+            .catch(() => {
+              res.json('Error').status(500)
+            })
         })
         .catch(() => {
-          res.json({ error: 'not found' }).status(500)
+          res.json('Error').status(500)
         })
     })
     .catch(() => {
-      res.json({ error: 'last error' }).status(500)
+      res.json('Error').status(500)
     })
 })
 
 router.delete('/survey/:id/delete', isLoggedIn(), (req, res, next) => {
   const id = req.params.id
+  console.log(id)
   Survey.findByIdAndDelete(id)
     .then((survey) => {
       res.status(200).json(survey)
