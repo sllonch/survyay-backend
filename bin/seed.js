@@ -60,8 +60,7 @@ const surveys = [
       { answerTitle: '2', votes: 0 },
       { answerTitle: '3', votes: 0 },
       { answerTitle: '4', votes: 0 },
-      { answerTitle: '5', votes: 0 },
-      { answerTitle: '5+', votes: 1 }
+      { answerTitle: '4+', votes: 1 }
     ]
   }
 ]

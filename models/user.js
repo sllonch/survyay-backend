@@ -4,7 +4,10 @@ const Schema = mongoose.Schema
 const userSchema = new Schema({
   name: String,
   email: String,
-  password: String
+  password: String,
+  url: {
+    type: String
+  }
 }, {
   timestamps: {
     createdAt: 'created_at',

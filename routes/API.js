@@ -81,11 +81,14 @@ router.post('/survey/new', isLoggedIn(), (req, res, next) => {
 
 router.get('/survey/:id', isLoggedIn(), (req, res, next) => {
   const id = req.params.id
+  if (!ObjectId.isValid(id)) {
+    return res.json({ error: 'Invalid Survey id' }).status(401)
+  }
   Survey.findById(id)
     .then((survey) => {
       if (!survey) {
         res.status(404).json({
-          error: 'Not-found'
+          error: 'Survey not found'
         })
       }
       res.status(200).json(survey)
@@ -102,9 +105,13 @@ router.put('/survey/:id/vote', isLoggedIn(), (req, res, next) => {
     userId
   } = req.body
 
+  if (!ObjectId.isValid(id)) {
+    return res.json({ error: 'Invalid Survey id' }).status(401)
+  }
+
   if (!answer || !userId) {
     return res.status(422).json({
-      error: 'empty'
+      error: 'Empty answer or userId'
     })
   }
 
@@ -117,7 +124,8 @@ router.put('/survey/:id/vote', isLoggedIn(), (req, res, next) => {
       }
       for (let i = 0; i < survey.participants.length; i++) {
         if (survey.participants[i].participant.equals(userId) && survey.participants[i].hasVoted === true) {
-          return res.json({ error: 'User already voted' }).status(402) // If user already voted return and send error
+          console.log('You already voted')
+          return res.status(401).json({ error: 'You already voted' }) // If user already voted return and send error message
         }
       }
       const { answers, participants } = survey
@@ -145,6 +153,11 @@ router.put('/survey/:id/vote', isLoggedIn(), (req, res, next) => {
 
 router.delete('/survey/:id/delete', isLoggedIn(), (req, res, next) => {
   const id = req.params.id
+
+  if (!ObjectId.isValid(id)) {
+    return res.json({ error: 'Invalid Survey id' }).status(401)
+  }
+
   Survey.findByIdAndDelete(id)
     .then((survey) => {
       res.status(200).json(survey)

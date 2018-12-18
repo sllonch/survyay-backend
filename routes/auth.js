@@ -16,7 +16,7 @@ router.get('/me', (req, res, next) => {
 router.post('/login', (req, res, next) => {
   if (req.session.currentUser) {
     return res.status(401).json({
-      error: 'unauthorized'
+      error: 'Unauthorized'
     })
   }
 
@@ -24,7 +24,7 @@ router.post('/login', (req, res, next) => {
 
   if (!email || !password) {
     return res.status(422).json({
-      error: 'validation'
+      error: 'Email or password empty'
     })
   }
 
@@ -34,7 +34,7 @@ router.post('/login', (req, res, next) => {
     .then((user) => {
       if (!user) {
         return res.status(404).json({
-          error: 'not-found'
+          error: 'User not found'
         })
       }
       // TODO async bcrypt
@@ -43,7 +43,7 @@ router.post('/login', (req, res, next) => {
         return res.status(200).json(user)
       }
       return res.status(404).json({
-        error: 'not-found'
+        error: 'Wrong username or password'
       })
     })
     .catch(next)
@@ -58,7 +58,7 @@ router.post('/signup', (req, res, next) => {
 
   if (!name || !email || !password) {
     return res.status(422).json({
-      error: 'empty'
+      error: 'Some field is empty'
     })
   }
 
@@ -68,7 +68,7 @@ router.post('/signup', (req, res, next) => {
     .then((userExists) => {
       if (userExists) {
         return res.status(422).json({
-          error: 'email-not-unique'
+          error: 'Email already registered'
         })
       }
 
