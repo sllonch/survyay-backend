@@ -89,6 +89,31 @@ router.post('/signup', (req, res, next) => {
     .catch(next)
 })
 
+router.put('/edit', (req, res, next) => {
+  const {
+    name,
+    email
+  } = req.body
+  const userId = req.session.currentUser._id
+
+  if (!name || !email) {
+    return res.status(422).json({
+      error: 'Some field is empty'
+    })
+  }
+
+  User.findByIdAndUpdate(userId, { $set: { name, email } }, { new: true })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({
+          error: 'User not found'
+        })
+      }
+      return res.status(200).json(user)
+    })
+    .catch(next)
+})
+
 router.post('/logout', (req, res) => {
   req.session.currentUser = null
   return res.status(204).send()
