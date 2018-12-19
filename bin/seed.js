@@ -20,12 +20,12 @@ mongoose.connect(
 const users = [
   {
     name: 'Paquito',
-    email: 'paquito@gmail.com',
+    email: 'paquito@paquitotest.com',
     password: '123456'
   },
   {
     name: 'Pepito',
-    email: 'pepito@gmail.com',
+    email: 'pepito@pepitotest.com',
     password: '123456'
   },
   {

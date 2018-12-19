@@ -43,7 +43,7 @@ router.post('/login', (req, res, next) => {
         return res.status(200).json(user)
       }
       return res.status(404).json({
-        error: 'Wrong username or password'
+        error: 'Wrong email or password'
       })
     })
     .catch(next)
