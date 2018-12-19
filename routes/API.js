@@ -80,7 +80,7 @@ router.post('/survey/new', isLoggedIn(), (req, res, next) => {
           from: 'survyay@survyay.com',
           subject: 'You have been invited to participate in a new Survey!',
           text: `Please log into https://survyays.firebaseapp.com/login and vote in the following survay: ${newSurvey.title}`,
-          html: `Please log into <link>https://survyays.firebaseapp.com/login</link> and vote in the following survay: <strong>${newSurvey.title}!</strong>`
+          html: `Please log into <link>https://survyays.firebaseapp.com/login</link> and vote in the following survay: <strong>${newSurvey.title}</strong>`
         }
         sgMail.send(msg)
         res.status(200).json(newSurvey)
@@ -121,7 +121,7 @@ router.put('/survey/:id/vote', isLoggedIn(), (req, res, next) => {
 
   if (!answer || !userId) {
     return res.status(422).json({
-      error: 'Empty answer or userId'
+      error: 'Empty answer'
     })
   }
 
@@ -129,7 +129,7 @@ router.put('/survey/:id/vote', isLoggedIn(), (req, res, next) => {
     .then((survey) => {
       if (!survey) {
         res.status(404).json({
-          error: 'Not-found'
+          error: 'Survey not found'
         })
       }
       for (let i = 0; i < survey.participants.length; i++) {
@@ -168,7 +168,7 @@ router.put('/survey/:id/add', isLoggedIn(), (req, res, next) => {
 
   if (!participants) {
     return res.status(422).json({
-      error: 'empty'
+      error: 'No participants were added'
     })
   }
 
@@ -198,7 +198,7 @@ router.put('/survey/:id/add', isLoggedIn(), (req, res, next) => {
             from: 'survyay@survyay.com',
             subject: 'You have been invited to participate in a new Survey!',
             text: `Please log into https://survyays.firebaseapp.com/login and vote in the following survay: ${survey.title}`,
-            html: `Please log into <link>https://survyays.firebaseapp.com/login</link> and vote in the following survay: <strong>${survey.title}!</strong>`
+            html: `Please log into <link>https://survyays.firebaseapp.com/login</link> and vote in the following survay: <strong>${survey.title}</strong>`
           }
           sgMail.send(msg)
           res.status(200).json(survey)
