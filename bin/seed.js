@@ -115,7 +115,7 @@ const users = [
   },
   {
     name: 'Sergi',
-    email: 'llonkovitx@gmail.com',
+    email: 'testsurvyay@test.com',
     password: '123456'
   },
   {
