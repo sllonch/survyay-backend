@@ -79,8 +79,8 @@ router.post('/survey/new', isLoggedIn(), (req, res, next) => {
           to: emails.toString(),
           from: 'survyay@survyay.com',
           subject: 'You have been invited to participate in a new Survey!',
-          text: `Please log into ${process.env.PUBLIC_DOMAIN}/login and vote in the following survay: ${newSurvey.title}`,
-          html: `Please log into <link>${process.env.PUBLIC_DOMAIN}/login</link> and vote in the following survay: <strong>${newSurvey.title}</strong>`
+          text: `Please log into https://survyays.firebaseapp.com/login and vote in the following survay: ${newSurvey.title}`,
+          html: `Please log into <link>https://survyays.firebaseapp.com/login</link> and vote in the following survay: <strong>${newSurvey.title}</strong>`
         }
         sgMail.send(msg)
         res.status(200).json(newSurvey)
@@ -209,8 +209,8 @@ router.put('/survey/:id/add', isLoggedIn(), (req, res, next) => {
             to: emails.toString(),
             from: 'survyay@survyay.com',
             subject: 'You have been invited to participate in a new Survey!',
-            text: `Please log into ${process.env.PUBLIC_DOMAIN}/login and vote in the following survay: ${survey.title}`,
-            html: `Please log into <link>${process.env.PUBLIC_DOMAIN}/login</link> and vote in the following survay: <strong>${survey.title}</strong>`
+            text: `Please log into https://survyays.firebaseapp.com/login and vote in the following survay: ${survey.title}`,
+            html: `Please log into <link>https://survyays.firebaseapp.com/login</link> and vote in the following survay: <strong>${survey.title}</strong>`
           }
           sgMail.send(msg)
           res.status(200).json(survey)
