@@ -62,6 +62,12 @@ router.post('/signup', (req, res, next) => {
     })
   }
 
+  if (password.length < 6) {
+    return res.status(422).json({
+      error: 'Password should be at least 6 characters long'
+    })
+  }
+
   User.findOne({
     email
   }, 'email')

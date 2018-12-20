@@ -13,13 +13,13 @@ router.get('/surveys', isLoggedIn(), (req, res, next) => {
     .then((surveys) => {
       if (!surveys) {
         res.status(404).json({
-          error: 'Not-found'
+          error: 'Surveys not found'
         })
       }
       res.status(200).json(surveys)
     })
     .catch(() => {
-      res.json('Error').status(500)
+      res.json('Error getting the list of surveys').status(500)
     })
 })
 
@@ -29,13 +29,13 @@ router.get('/mysurveys', isLoggedIn(), (req, res, next) => {
     .then((surveys) => {
       if (!surveys) {
         res.status(404).json({
-          error: 'Not-found'
+          error: 'Surveys not found'
         })
       }
       res.status(200).json(surveys)
     })
     .catch(() => {
-      res.json('Error').status(500)
+      res.json('Error getting your list of surveys').status(500)
     })
 })
 
@@ -49,7 +49,7 @@ router.post('/survey/new', isLoggedIn(), (req, res, next) => {
 
   if (!participants || !title || !answers || !owner) {
     return res.status(422).json({
-      error: 'empty'
+      error: 'Some Survey field is empty'
     })
   }
 
@@ -59,7 +59,7 @@ router.post('/survey/new', isLoggedIn(), (req, res, next) => {
     .then((users) => {
       if (!users) {
         return res.status(404).json({
-          error: 'Users-not-found'
+          error: 'Users not found'
         })
       }
 
@@ -79,8 +79,8 @@ router.post('/survey/new', isLoggedIn(), (req, res, next) => {
           to: emails.toString(),
           from: 'survyay@survyay.com',
           subject: 'You have been invited to participate in a new Survey!',
-          text: `Please log into https://survyays.firebaseapp.com/login and vote in the following survay: ${newSurvey.title}`,
-          html: `Please log into <link>https://survyays.firebaseapp.com/login</link> and vote in the following survay: <strong>${newSurvey.title}</strong>`
+          text: `Please log into ${process.env.PUBLIC_DOMAIN}/login and vote in the following survay: ${newSurvey.title}`,
+          html: `Please log into <link>${process.env.PUBLIC_DOMAIN}/login</link> and vote in the following survay: <strong>${newSurvey.title}</strong>`
         }
         sgMail.send(msg)
         res.status(200).json(newSurvey)
@@ -104,7 +104,7 @@ router.get('/survey/:id', isLoggedIn(), (req, res, next) => {
       res.status(200).json(survey)
     })
     .catch(() => {
-      res.json('Error').status(500)
+      res.json('Error getting the Survey').status(500)
     })
 })
 
@@ -114,6 +114,8 @@ router.put('/survey/:id/vote', isLoggedIn(), (req, res, next) => {
     answer,
     userId
   } = req.body
+
+  console.log(answer)
 
   if (!ObjectId.isValid(id)) {
     return res.json({ error: 'Invalid Survey id' }).status(401)
@@ -139,24 +141,34 @@ router.put('/survey/:id/vote', isLoggedIn(), (req, res, next) => {
       }
       const { answers, participants } = survey
       const indexAnswer = answers.findIndex(x => x.answerTitle === answer)
+      if (indexAnswer === -1) {
+        return res.status(422).json({
+          error: 'Answer not found'
+        })
+      }
       answers[indexAnswer].votes++
       const indexParticipant = participants.findIndex(y => y.participant.equals(userId))
+      if (indexParticipant === -1) {
+        return res.status(422).json({
+          error: 'Particiant not found'
+        })
+      }
       participants[indexParticipant].hasVoted = true
       return Survey.findByIdAndUpdate(id, { $set: { answers, participants } }) // Stores the vote in the Database
         .then((survey) => {
           if (!survey) {
             res.status(404).json({
-              error: 'Not-found'
+              error: 'Survey not found'
             })
           }
           res.status(200).json(survey)
         })
         .catch(() => {
-          res.json({ error: 'not found' }).status(500)
+          res.json({ error: 'Error updating the Survey' }).status(500)
         })
     })
     .catch(() => {
-      res.json({ error: 'last error' }).status(500)
+      res.json({ error: 'Error finding the Survey' }).status(500)
     })
 })
 
@@ -178,7 +190,7 @@ router.put('/survey/:id/add', isLoggedIn(), (req, res, next) => {
     .then((users) => {
       if (!users) {
         return res.status(404).json({
-          error: 'Users-not-found'
+          error: 'Users not found'
         })
       }
       participants = users.map(user => user._id)
@@ -197,14 +209,14 @@ router.put('/survey/:id/add', isLoggedIn(), (req, res, next) => {
             to: emails.toString(),
             from: 'survyay@survyay.com',
             subject: 'You have been invited to participate in a new Survey!',
-            text: `Please log into https://survyays.firebaseapp.com/login and vote in the following survay: ${survey.title}`,
-            html: `Please log into <link>https://survyays.firebaseapp.com/login</link> and vote in the following survay: <strong>${survey.title}</strong>`
+            text: `Please log into ${process.env.PUBLIC_DOMAIN}/login and vote in the following survay: ${survey.title}`,
+            html: `Please log into <link>${process.env.PUBLIC_DOMAIN}/login</link> and vote in the following survay: <strong>${survey.title}</strong>`
           }
           sgMail.send(msg)
           res.status(200).json(survey)
         })
         .catch(() => {
-          res.json('Error').status(500)
+          res.json('Error updating the Survey').status(500)
         })
     })
     .catch(next)
@@ -222,7 +234,7 @@ router.delete('/survey/:id/delete', isLoggedIn(), (req, res, next) => {
       res.status(200).json(survey)
     })
     .catch(() => {
-      res.json('Error').status(500)
+      res.json('Error deleting the Survey').status(500)
     })
 })
 
