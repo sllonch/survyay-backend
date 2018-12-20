@@ -110,12 +110,12 @@ const users = [
   },
   {
     name: 'Sergi',
-    email: 'sllonk@gmail.com',
+    email: 'sergitest@test.com',
     password: '123456'
   },
   {
     name: 'Sergi',
-    email: 'testsurvyay@test.com',
+    email: 'sergitest2@test.com',
     password: '123456'
   },
   {
