@@ -115,8 +115,6 @@ router.put('/survey/:id/vote', isLoggedIn(), (req, res, next) => {
     userId
   } = req.body
 
-  console.log(answer)
-
   if (!ObjectId.isValid(id)) {
     return res.json({ error: 'Invalid Survey id' }).status(401)
   }
